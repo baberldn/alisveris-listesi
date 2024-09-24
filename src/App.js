@@ -1,20 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoCloseOutline } from "react-icons/io5";
 
 const App = () => {
-  const [todos, setTodos] = useState(() => {
-    const storedTodos = localStorage.getItem('todos');
-    return storedTodos ? JSON.parse(storedTodos) : [];
-  });
-
+  const [todos, setTodos] = useState([]);
   const [inputValue, setInputValue] = useState('');
+
+  useEffect(() => {
+    const storedTodos = localStorage.getItem('todos');
+    if (storedTodos) {
+      setTodos(JSON.parse(storedTodos));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(todos));
+  }, [todos]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (inputValue.trim()) {
-      const newTodos = [...todos, inputValue];
-      setTodos(newTodos);
-      localStorage.setItem('todos', JSON.stringify(newTodos));
+      setTodos((prevTodos) => [...prevTodos, inputValue]);
       setInputValue('');
     }
   };
@@ -27,11 +32,9 @@ const App = () => {
   const handleDeleteTodo = (index) => {
     const updatedTodos = todos.filter((_, i) => i !== index);
     setTodos(updatedTodos);
-    localStorage.setItem('todos', JSON.stringify(updatedTodos));
   };
 
   return (
-    
     <div className='contanier'>
       <h1>Project 4: Alışveriş Listesi</h1>
       <h3>Alınıcaklar Listesi</h3>
@@ -46,7 +49,7 @@ const App = () => {
         <button type="submit">Add</button>
       </form>
 
-     
+      
 
       <ul>
         {todos.map((todo, index) => (
